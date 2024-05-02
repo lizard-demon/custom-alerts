@@ -2,35 +2,35 @@
 # yarn lockfile v1
 
 
-"@devvit/protos@0.10.18":
-  version "0.10.18"
-  resolved "https://registry.yarnpkg.com/@devvit/protos/-/protos-0.10.18.tgz#b3dbc720d65883f9e32a0952adab333d0c830805"
-  integrity sha512-cRdoCZTQam36y9yvQJEV2QhYYlFd+G0fAdGPvxw9sR8BDuMPvjMoypNUEPo2df1PaxiCcqtY55tztvdW6wO+4Q==
+"@devvit/protos@0.10.19":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@devvit/protos/-/protos-0.10.19.tgz#c50c255ab623a357564e63a38def8d780e363399"
+  integrity sha512-kfqe1x2mcu2X2eOij9F8c5gUlplS4rbmXv1PlUpnIzS+DVWcSICMsU+OG7Q2aoOfaA84BC/aAp6LxWzdMkdzpg==
   dependencies:
     protobufjs "7.2.4"
     rxjs "7.8.1"
 
-"@devvit/public-api@0.10.18":
-  version "0.10.18"
-  resolved "https://registry.yarnpkg.com/@devvit/public-api/-/public-api-0.10.18.tgz#e68a0345076ad6b240967c58442047afa25bd0a4"
-  integrity sha512-n+nIZncc/0C37iQSwiFAMsxxRgLlS/WBSPCEqtIc8U3gpa9ATL5uyHEi0DbxYQJ4pVHah4RjnlgPPdltoXHthA==
+"@devvit/public-api@0.10.19":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@devvit/public-api/-/public-api-0.10.19.tgz#d0b1c2cd408071786c2274b6e24eaadc375019ae"
+  integrity sha512-b8b6TTDkgy8ETXNolUxyCPQwywWM3SUZNgz1UWFyusPBPtq/Kwr9BfEnGSpDV/vFry/gD3jsDez4oMDzgkhzcg==
   dependencies:
-    "@devvit/protos" "0.10.18"
-    "@devvit/runtimes" "0.10.18"
-    "@devvit/shared-types" "0.10.18"
+    "@devvit/protos" "0.10.19"
+    "@devvit/runtimes" "0.10.19"
+    "@devvit/shared-types" "0.10.19"
     base64-js "1.5.1"
     clone-deep "4.0.1"
     core-js "3.27.2"
     lodash.isequal "4.5.0"
 
-"@devvit/runtimes@0.10.18":
-  version "0.10.18"
-  resolved "https://registry.yarnpkg.com/@devvit/runtimes/-/runtimes-0.10.18.tgz#fb80c2752fe253693621b1f2cd869bcb5d290eaa"
-  integrity sha512-f70PQygj9hE2RecPDlFwMtvo/jkhs9qXQj23OwiCfHpjEYNK5jkgG9r3LeSLe/fTH0pccKyFbCkZotf2c4Qh0A==
+"@devvit/runtimes@0.10.19":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@devvit/runtimes/-/runtimes-0.10.19.tgz#40239eac95224bb3ef88ef1ed20c9fb8c83a1015"
+  integrity sha512-4j0k0OKPmi/W6Y/3c9pwD4e5DLb4FOXPQlPLsVwfTkaczMGVK6tCJQYjcgXtHdNnGpPhsJbMvcSHvHy+n2SD/g==
   dependencies:
-    "@devvit/protos" "0.10.18"
-    "@devvit/shared-types" "0.10.18"
-    "@devvit/web-worker" "0.10.18"
+    "@devvit/protos" "0.10.19"
+    "@devvit/shared-types" "0.10.19"
+    "@devvit/web-worker" "0.10.19"
     base64-js "1.5.1"
     buffer "6.0.3"
     cron-parser "4.7.1"
@@ -43,22 +43,22 @@
     uuid "9.0.0"
     ws "8.11.0"
 
-"@devvit/shared-types@0.10.18":
-  version "0.10.18"
-  resolved "https://registry.yarnpkg.com/@devvit/shared-types/-/shared-types-0.10.18.tgz#5243aff5afd09f05c1b2a3b261005f678b950b53"
-  integrity sha512-g+ihemPzBLqCoZ7RqR5hzXEpiWUTu+A6w/S8t5A+TsFfdIVo30KgyeB+hLDDqEbHEKfB/27HnPQ4Bu9e2haZAA==
+"@devvit/shared-types@0.10.19":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@devvit/shared-types/-/shared-types-0.10.19.tgz#94f98cc4527b7d82c1874eae424b7de23bb47d67"
+  integrity sha512-3NJt3jEsaFViAA2FfDYRt2UImLMjZC/H1vv8kHGWG4v+VyWiT1dK3ohO0gRakSKGw8I+k/c/AS8LR8QgIYIXPA==
   dependencies:
-    "@devvit/protos" "0.10.18"
+    "@devvit/protos" "0.10.19"
 
-"@devvit/tsconfig@0.10.18":
-  version "0.10.18"
-  resolved "https://registry.yarnpkg.com/@devvit/tsconfig/-/tsconfig-0.10.18.tgz#df2acbf55fdf111c7334b2e07848b166211ee0da"
-  integrity sha512-9rpyeSupUtRnCxWLxKBGdeyAp9Jc83idGWieszdLlbZhZvqQyPfoapRuk0MYb1ybt6AgKxhRLEO/EpcI5ELGBw==
+"@devvit/tsconfig@0.10.19":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@devvit/tsconfig/-/tsconfig-0.10.19.tgz#979863ac497aae4945459ebd734346b651b43ac4"
+  integrity sha512-QUQh5PjGp5LK5Yq8UqtmY9f7Xikjb3qFAuhxZtjHxWK1CF1fOoxYFC1JJyF97BZeBg0f7IYPhj3zGo+nMRTxbQ==
 
-"@devvit/web-worker@0.10.18":
-  version "0.10.18"
-  resolved "https://registry.yarnpkg.com/@devvit/web-worker/-/web-worker-0.10.18.tgz#77938c74bcc223754c55b286c937aa74413e27c5"
-  integrity sha512-YnYCE5O6de0gBtS5xFQjEqLstU0x+mRK8sJ1Yv/GMO2lhCKi7UrZ+lXqfjElCidgz0/GjuvHhiPvIHCyTHIKww==
+"@devvit/web-worker@0.10.19":
+  version "0.10.19"
+  resolved "https://registry.yarnpkg.com/@devvit/web-worker/-/web-worker-0.10.19.tgz#2b362ebddf6bc16bdcbd8f1b238b4f02334e548e"
+  integrity sha512-YYQ9424uf5kBBC0p3v+y1eq0gOAvcJoIhj1QpYepg+rKLj/0Sg41JEDpz2pnAp0U1A1o+10TNO/y4iTj9OqvVQ==
 
 "@fastify/busboy@^2.0.0":
   version "2.1.1"

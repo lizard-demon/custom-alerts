@@ -1,12 +1,12 @@
-import { Devvit, MenuItem, Context, MenuItemOnPressEvent } from '@devvit/public-api';
-import { Metadata, ContextActionResponse, KeySet, MessageSet, ListFilter, PostSubmit, PostV2 } from '@devvit/protos';
+import { Devvit, MenuItem, Context, TriggerContext, MenuItemOnPressEvent } from '@devvit/public-api';
+import { PostCreate, PostV2 } from '@devvit/protos';
 
 Devvit.configure({
     redditAPI: true,
     kvStore: true,
 });
 
-async function getSubscribed(context: Context): Promise<string[]> {
+async function getSubscribed(context: TriggerContext): Promise<string[]> {
     const subscribed = await context.redis.hgetall("subscribed");
     if(!subscribed) {
         return [];
@@ -32,7 +32,7 @@ async function subscribeHandler(event: MenuItemOnPressEvent, context: Devvit.Con
         });
     }
 
-    const user = await context.reddit.getUserById(userID);
+    const user = await context.reddit.getUserById(userID!);
     if(!user) {
         context.ui.showToast({
             appearance: 'neutral',
@@ -47,7 +47,7 @@ async function subscribeHandler(event: MenuItemOnPressEvent, context: Devvit.Con
     });
 }
 
-async function unsubscribeHandler(event: MenuItemOnPressEvent, context: Devvit.Context): Promise<void> {
+async function unsubscribeHandler(_: MenuItemOnPressEvent, context: Devvit.Context): Promise<void> {
     const userID = context.userId;
     if(!userID) {
         context.ui.showToast({
@@ -56,7 +56,7 @@ async function unsubscribeHandler(event: MenuItemOnPressEvent, context: Devvit.C
         });
     }
 
-    const user = await context.reddit.getUserById(userID);
+    const user = await context.reddit.getUserById(userID!);
     if(!user) {
         context.ui.showToast({
             appearance: 'neutral',
@@ -90,7 +90,7 @@ menuItems.forEach((action) => {
     Devvit.addMenuItem(action);
 });
 
-async function generateMessageBody(context: Context, post: PostV2, url: string): Promise<string> {
+async function generateMessageBody(context: TriggerContext, post: PostV2, url: string): Promise<string> {
     const author = await context.reddit.getUserById(post.authorId);
 
     return `Author: u/${author.username}\n\nTitle: ${post.title}\n\n________\n\n${url}`  
@@ -98,7 +98,7 @@ async function generateMessageBody(context: Context, post: PostV2, url: string):
 
 Devvit.addTrigger({
     event: 'PostCreate',
-    async onEvent(postSubmit: PostSubmit, context: Context): Promise<void> {
+    async onEvent(postSubmit: PostCreate, context: TriggerContext): Promise<void> {
         const subscribed = await getSubscribed(context);
         if(postSubmit.post === undefined) {
             return;
