@@ -30,7 +30,7 @@ const createSubscriptionHandler = (
 };
 
 Devvit.addMenuItem({
-    location: "subreddit",
+    location: "post",
     label: "Notify Me of New Posts",
     description: "Get a PM when a new post is made in this subreddit.",
     onPress: createSubscriptionHandler(
