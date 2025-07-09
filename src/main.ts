@@ -1,123 +1,84 @@
-import { Devvit, MenuItem, Context, TriggerContext, MenuItemOnPressEvent } from '@devvit/public-api';
-import { PostCreate, PostV2 } from '@devvit/protos';
+import { Devvit, Context, TriggerContext, MenuItemOnPressEvent } from '@devvit/public-api';
+import { PostCreate } from '@devvit/protos';
 
 Devvit.configure({
     redditAPI: true,
     kvStore: true,
 });
 
-async function getSubscribed(context: TriggerContext): Promise<string[]> {
-    const subscribed = await context.redis.hgetall("subscribed");
-    if(!subscribed) {
-        return [];
-    }
+const SUBSCRIPTIONS_KEY = "subscribed_users";
 
-    return Object.keys(subscribed);
-}
+const createSubscriptionHandler = (
+    updateSubscription: (username: string, context: Context) => Promise<unknown>,
+    successToast: string
+): (event: MenuItemOnPressEvent, context: Context) => Promise<void> => {
+    return async (_, context) => {
+        const { userId, reddit, ui } = context;
+        if (!userId) {
+            ui.showToast({ appearance: 'neutral', text: "You must be logged in to subscribe." });
+            return;
+        }
+        try {
+            const user = await reddit.getUserById(userId);
+            await updateSubscription(user.username.toLowerCase(), context);
+            ui.showToast({ appearance: 'success', text: successToast });
+        } catch (error) {
+            console.error('Subscription handler failed:', error);
+            ui.showToast({ appearance: 'neutral', text: "An error occurred. Please try again." });
+        }
+    };
+};
 
-async function addSubscription(context: Context, user: string): Promise<void> {
-    await context.redis.hset("subscribed", { [user]: "" });
-}
-
-async function deleteSubscription(context: Context, user: string): Promise<void> {
-    await context.redis.hdel("subscribed", [user]);
-}
-
-async function subscribeHandler(event: MenuItemOnPressEvent, context: Devvit.Context): Promise<void> {
-    const userID = context.userId;
-    if(!userID) {
-        context.ui.showToast({
-            appearance: 'neutral',
-            text: "You must be logged in to use this app."
-        });
-    }
-
-    const user = await context.reddit.getUserById(userID!);
-    if(!user) {
-        context.ui.showToast({
-            appearance: 'neutral',
-            text: "Couldn't fetch user."
-        });
-    }
-
-    await addSubscription(context, user.username.toLowerCase());
-    context.ui.showToast({
-        appearance: 'success',
-        text: "You have subscribed to new posts from this subreddit."
-    });
-}
-
-async function unsubscribeHandler(_: MenuItemOnPressEvent, context: Devvit.Context): Promise<void> {
-    const userID = context.userId;
-    if(!userID) {
-        context.ui.showToast({
-            appearance: 'neutral',
-            text: "You must be logged in to use this app."
-        });
-    }
-
-    const user = await context.reddit.getUserById(userID!);
-    if(!user) {
-        context.ui.showToast({
-            appearance: 'neutral',
-            text: "Couldn't fetch user."
-        });
-    }
-
-    await deleteSubscription(context, user.username.toLowerCase());
-    context.ui.showToast({
-        appearance: 'success',
-        text: "You will no longer receive notifications about new posts from this subreddit."
-    });
-}
-
-const menuItems: MenuItem[] = [
-    {
-        location: "subreddit",
-        onPress: subscribeHandler,
-        label: "Get Notified for New Posts",
-        description: "Receive notifications about new posts in this subreddit."
-    },
-    {
-        location: "subreddit",
-        onPress: unsubscribeHandler,
-        label: "Stop Getting New Post Notifications",
-        description: "Stop receiving notifications about new posts in this subreddit."
-    }
-];
-
-menuItems.forEach((action) => {
-    Devvit.addMenuItem(action);
+Devvit.addMenuItem({
+    location: "subreddit",
+    label: "Notify Me of New Posts",
+    description: "Get a PM when a new post is made in this subreddit.",
+    onPress: createSubscriptionHandler(
+        (username, context) => context.redis.hset(SUBSCRIPTIONS_KEY, { [username]: "" }),
+        "Subscribed! You'll get a message for new posts."
+    ),
 });
 
-async function generateMessageBody(context: TriggerContext, post: PostV2, url: string): Promise<string> {
-    const author = await context.reddit.getUserById(post.authorId);
-
-    return `Author: u/${author.username}\n\nTitle: ${post.title}\n\n________\n\n${url}`  
-}
+Devvit.addMenuItem({
+    location: "subreddit",
+    label: "Stop New Post Notifications",
+    description: "Stop receiving PMs about new posts.",
+    onPress: createSubscriptionHandler(
+        (username, context) => context.redis.hdel(SUBSCRIPTIONS_KEY, [username]),
+        "Unsubscribed. You will no longer receive notifications."
+    ),
+});
 
 Devvit.addTrigger({
     event: 'PostCreate',
-    async onEvent(postSubmit: PostCreate, context: TriggerContext): Promise<void> {
-        const subscribed = await getSubscribed(context);
-        if(postSubmit.post === undefined) {
+    async onEvent({ post }: PostCreate, context: TriggerContext) {
+        if (!post) {
+            console.log("PostCreate event received without post data.");
             return;
         }
 
-        const postId = postSubmit.post.id.substring(3);
-        const subreddit = await context.reddit.getSubredditById(postSubmit.post.subredditId);
-        const subredditName = subreddit.name;
-        const url = `https://www.reddit.com/r/${subredditName}/comments/${postId}/_/`;
-        const body = await generateMessageBody(context, postSubmit.post, url);
+        const subscribers = Object.keys(await context.redis.hgetall(SUBSCRIPTIONS_KEY) ?? {});
+        if (subscribers.length === 0) {
+            return; // No one to notify.
+        }
 
-        subscribed.forEach((username) => {
+        const [author, subreddit] = await Promise.all([
+            context.reddit.getUserById(post.authorId),
+            context.reddit.getSubredditById(post.subredditId),
+        ]);
+
+        const subject = `New Post in r/${subreddit.name}`;
+        const body = `u/${author.username} posted: "${post.title}"\n\nhttps://www.reddit.com${post.permalink}`;
+        const messagePromises = subscribers.map(username =>
             context.reddit.sendPrivateMessage({
                 to: username,
-                subject: `A new post has been made in r/${subredditName}`,
+                subject,
                 text: body,
-            });
-        });
-    }
+            })
+        );
+        await Promise.all(messagePromises);
+        console.log(`Notified ${subscribers.length} users about post ${post.id}.`);
+    },
 });
 
 export default Devvit;
